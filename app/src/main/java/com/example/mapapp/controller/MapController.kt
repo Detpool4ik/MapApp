@@ -1,6 +1,7 @@
 package com.example.mapapp.controller
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,15 +21,19 @@ import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.InputListener
 import com.yandex.mapkit.map.Map
+import com.yandex.mapkit.map.TextStyle
 import com.yandex.mapkit.map.VisibleRegionUtils
 import com.yandex.mapkit.mapview.MapView
 import com.yandex.runtime.image.ImageProvider
 import java.lang.ref.WeakReference
+
 class MapController(context: Context) : DefaultLifecycleObserver, InputListener {
     val mapView = MapView(context)
     private val map = mapView.mapWindow.map
     private val pins = map.mapObjects.addCollection()
     private val lines = map.mapObjects.addCollection()
+    private val labels = map.mapObjects.addCollection()
+    private val inputListener = WeakReference<InputListener>(this)
     private val pinIcon = ImageProvider.fromResource(context, R.drawable.map_pin)
     private val searchService = SearchService()
 
@@ -36,30 +41,52 @@ class MapController(context: Context) : DefaultLifecycleObserver, InputListener 
         private set
 
     init {
-        map.addInputListener(WeakReference(this))
+        map.addInputListener(inputListener)
         moveCamera(MapConfig.initialPoint, MapConfig.INITIAL_ZOOM)
     }
 
-    // Тап и поиск используют один и тот же метод добавления маркера.
+    // Поиск и нажатие на карту используют общий метод добавления точки.
     fun addMarker(marker: MapMarker) {
-        pins.addPlacemark().apply {
-            geometry = marker.toPoint()
-            setIcon(pinIcon)
-            setIconStyle(IconStyle().apply { anchor = PointF(0.5f, 1f) })
-            zIndex = 10f
-        }
-        val markers = state.markers + marker
+        state = state.withMarker(marker).copy(error = null)
+        redrawMap()
+    }
+
+    private fun redrawMap() {
+        pins.clear()
         lines.clear()
-        val distance = if (markers.size >= 2) {
-            val first = markers[markers.lastIndex - 1]
-            val second = markers.last()
-            lines.addPolyline(Polyline(listOf(first.toPoint(), second.toPoint()))).apply {
-                strokeWidth = 4f
-                setStrokeColor(android.graphics.Color.rgb(101, 80, 164))
+        labels.clear()
+
+        state.markers.forEach { marker ->
+            pins.addPlacemark().apply {
+                geometry = marker.toPoint()
+                setIcon(pinIcon)
+                setIconStyle(IconStyle().apply { anchor = PointF(0.5f, 1f) })
+                zIndex = 10f
             }
-            DistanceService.calculate(first, second)
-        } else null
-        state = state.copy(markers = markers, distanceMeters = distance, error = null)
+        }
+
+        state.edges.forEach { (first, second) ->
+            drawEdge(first, second)
+        }
+    }
+
+    private fun drawEdge(first: MapMarker, second: MapMarker) {
+        val middle = DistanceService.midpoint(first, second).toPoint()
+        lines.addPolyline(Polyline(listOf(first.toPoint(), middle, second.toPoint()))).apply {
+            strokeWidth = 4f
+            setStrokeColor(Color.rgb(101, 80, 164))
+        }
+
+        // Текстовая метка находится в середине линии и движется вместе с картой.
+        val distance = DistanceService.format(DistanceService.calculate(first, second))
+        labels.addPlacemark().apply {
+            geometry = middle
+            zIndex = 20f
+            setText(distance, TextStyle(
+                14f, Color.BLACK, 2f, Color.WHITE,
+                TextStyle.Placement.CENTER, 0f, false, false
+            ))
+        }
     }
 
     fun search(address: String) {
@@ -87,9 +114,8 @@ class MapController(context: Context) : DefaultLifecycleObserver, InputListener 
 
     fun clear() {
         searchService.cancel()
-        pins.clear()
-        lines.clear()
         state = MapState()
+        redrawMap()
     }
 
     private fun moveCamera(marker: MapMarker, zoom: Float) {
@@ -116,7 +142,7 @@ class MapController(context: Context) : DefaultLifecycleObserver, InputListener 
     }
     override fun onDestroy(owner: LifecycleOwner) {
         searchService.cancel()
-        map.removeInputListener(WeakReference(this))
+        map.removeInputListener(inputListener)
         owner.lifecycle.removeObserver(this)
     }
 }

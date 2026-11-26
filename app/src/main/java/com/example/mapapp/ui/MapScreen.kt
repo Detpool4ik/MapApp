@@ -39,7 +39,6 @@ fun MapScreen(controller: MapController?) {
                     factory = { controller.mapView },
                     modifier = Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(12.dp))
                 )
-                DistancePanel(state)
                 Button(
                     onClick = { focus.clearFocus(); address = ""; controller.clear() },
                     modifier = Modifier.fillMaxWidth()

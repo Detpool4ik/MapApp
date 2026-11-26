@@ -17,6 +17,19 @@ object DistanceService {
         return 2 * EARTH_RADIUS * asin(sqrt(a.coerceIn(0.0, 1.0)))
     }
 
+    // Середина отрезка в проекции Меркатора, с учётом перехода через 180°.
+    fun midpoint(first: MapMarker, second: MapMarker): MapMarker {
+        fun mercatorY(latitude: Double): Double {
+            val phi = Math.toRadians(latitude.coerceIn(-85.0, 85.0))
+            return asinh(tan(phi))
+        }
+        val y = (mercatorY(first.latitude) + mercatorY(second.latitude)) / 2
+        val latitude = Math.toDegrees(atan(sinh(y)))
+        val delta = (second.longitude - first.longitude + 540.0) % 360.0 - 180.0
+        val longitude = (first.longitude + delta / 2 + 540.0) % 360.0 - 180.0
+        return MapMarker(latitude, longitude)
+    }
+
     fun format(meters: Double): String = if (meters < 1000) {
         String.format(Locale("ru", "RU"), "%.0f м", meters)
     } else {
