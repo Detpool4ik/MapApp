@@ -12,7 +12,6 @@ import com.example.mapapp.model.MapMarker
 import com.example.mapapp.model.MapState
 import com.example.mapapp.service.DistanceService
 import com.example.mapapp.service.SearchService
-import com.example.mapapp.ui.DistanceFormatter
 import com.example.mapapp.ui.theme.MapStyle
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -68,14 +67,16 @@ class MapController(private val context: Context) : DefaultLifecycleObserver, In
     }
 
     private fun drawEdge(first: MapMarker, second: MapMarker) {
-        val middle = DistanceService.midpoint(first, second).toPoint()
-        lines.addPolyline(Polyline(listOf(first.toPoint(), middle, second.toPoint()))).apply {
+        val start = first.toPoint()
+        val end = second.toPoint()
+        val middle = DistanceService.midpoint(start, end)
+        lines.addPolyline(Polyline(listOf(start, middle, end))).apply {
             strokeWidth = mapStyle.lineWidth
             setStrokeColor(mapStyle.lineColor)
         }
 
         // Текстовая метка находится в середине линии и движется вместе с картой.
-        val distance = DistanceFormatter.format(context, DistanceService.calculate(first, second))
+        val distance = DistanceService.format(context, DistanceService.calculate(start, end))
         labels.addPlacemark().apply {
             geometry = middle
             zIndex = mapStyle.labelZIndex

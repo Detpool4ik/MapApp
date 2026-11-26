@@ -1,31 +1,31 @@
 package com.example.mapapp.service
 
-import com.example.mapapp.model.MapMarker
-import kotlin.math.*
+import android.content.Context
+import com.example.mapapp.R
+import com.yandex.mapkit.geometry.Geo
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.geometry.Segment
 
 object DistanceService {
-    private const val EARTH_RADIUS = 6_371_000.0
-
-    // Формула гаверсинусов: расстояние по поверхности Земли.
-    fun calculate(first: MapMarker, second: MapMarker): Double {
-        val lat1 = Math.toRadians(first.latitude)
-        val lat2 = Math.toRadians(second.latitude)
-        val dLat = lat2 - lat1
-        val dLon = Math.toRadians(second.longitude - first.longitude)
-        val a = sin(dLat / 2).pow(2) + cos(lat1) * cos(lat2) * sin(dLon / 2).pow(2)
-        return 2 * EARTH_RADIUS * asin(sqrt(a.coerceIn(0.0, 1.0)))
+    // Готовый метод MapKit возвращает расстояние в метрах.
+    fun calculate(first: Point, second: Point): Double {
+        return Geo.distance(first, second)
     }
 
-    // Середина отрезка в проекции Меркатора, с учётом перехода через 180°.
-    fun midpoint(first: MapMarker, second: MapMarker): MapMarker {
-        fun mercatorY(latitude: Double): Double {
-            val phi = Math.toRadians(latitude.coerceIn(-85.0, 85.0))
-            return asinh(tan(phi))
+    // 0.5 означает середину отрезка между точками.
+    fun midpoint(first: Point, second: Point): Point {
+        if (first.latitude == second.latitude && first.longitude == second.longitude) {
+            return first
         }
-        val y = (mercatorY(first.latitude) + mercatorY(second.latitude)) / 2
-        val latitude = Math.toDegrees(atan(sinh(y)))
-        val delta = (second.longitude - first.longitude + 540.0) % 360.0 - 180.0
-        val longitude = (first.longitude + delta / 2 + 540.0) % 360.0 - 180.0
-        return MapMarker(latitude, longitude)
+        return Geo.pointOnSegmentByFactor(Segment(first, second), 0.5)
+    }
+
+    // Переводим метры в километры, если расстояние не меньше 1 км.
+    fun format(context: Context, meters: Double): String {
+        return if (meters < 1000) {
+            context.getString(R.string.distance_meters, meters)
+        } else {
+            context.getString(R.string.distance_kilometers, meters / 1000)
+        }
     }
 }

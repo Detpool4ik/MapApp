@@ -26,8 +26,12 @@ fun MapScreen(controller: MapController?) {
             var address by rememberSaveable { mutableStateOf("") }
             val focus = LocalFocusManager.current
             val state = controller.state
+            val padding = dimensionResource(R.dimen.screen_padding)
             Column(
-                modifier = Modifier.fillMaxSize().systemBarsPadding().imePadding().padding(dimensionResource(R.dimen.screen_padding)),
+                modifier = Modifier.fillMaxSize()
+                    .systemBarsPadding()
+                    .imePadding()
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.screen_spacing))
             ) {
                 Text(stringResource(R.string.map_title), style = MaterialTheme.typography.headlineMedium)
@@ -42,7 +46,11 @@ fun MapScreen(controller: MapController?) {
                     modifier = Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(dimensionResource(R.dimen.map_corner_radius)))
                 )
                 Button(
-                    onClick = { focus.clearFocus(); address = ""; controller.clear() },
+                    onClick = {
+                        focus.clearFocus()
+                        address = ""
+                        controller.clear()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text(stringResource(R.string.clear_map)) }
             }

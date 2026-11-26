@@ -1,88 +1,11 @@
 package com.example.mapapp.ui.theme
 
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.colorResource
-import com.example.mapapp.R
+import androidx.compose.ui.graphics.Color
 
-@Composable
-internal fun lightAppColors(): ColorScheme = lightColorScheme(
-    primary = colorResource(R.color.light_primary),
-    onPrimary = colorResource(R.color.light_on_primary),
-    primaryContainer = colorResource(R.color.light_primary_container),
-    onPrimaryContainer = colorResource(R.color.light_on_primary_container),
-    secondary = colorResource(R.color.light_secondary),
-    onSecondary = colorResource(R.color.light_on_secondary),
-    secondaryContainer = colorResource(R.color.light_secondary_container),
-    onSecondaryContainer = colorResource(R.color.light_on_secondary_container),
-    tertiary = colorResource(R.color.light_tertiary),
-    onTertiary = colorResource(R.color.light_on_tertiary),
-    tertiaryContainer = colorResource(R.color.light_tertiary_container),
-    onTertiaryContainer = colorResource(R.color.light_on_tertiary_container),
-    background = colorResource(R.color.light_background),
-    onBackground = colorResource(R.color.light_on_background),
-    surface = colorResource(R.color.light_surface),
-    onSurface = colorResource(R.color.light_on_surface),
-    surfaceVariant = colorResource(R.color.light_surface_variant),
-    onSurfaceVariant = colorResource(R.color.light_on_surface_variant),
-    surfaceTint = colorResource(R.color.light_surface_tint),
-    outline = colorResource(R.color.light_outline),
-    outlineVariant = colorResource(R.color.light_outline_variant),
-    error = colorResource(R.color.light_error),
-    onError = colorResource(R.color.light_on_error),
-    errorContainer = colorResource(R.color.light_error_container),
-    onErrorContainer = colorResource(R.color.light_on_error_container),
-    inverseSurface = colorResource(R.color.light_inverse_surface),
-    inverseOnSurface = colorResource(R.color.light_inverse_on_surface),
-    inversePrimary = colorResource(R.color.light_inverse_primary),
-    scrim = colorResource(R.color.light_scrim),
-    surfaceBright = colorResource(R.color.light_surface_bright),
-    surfaceDim = colorResource(R.color.light_surface_dim),
-    surfaceContainerLowest = colorResource(R.color.light_surface_container_lowest),
-    surfaceContainerLow = colorResource(R.color.light_surface_container_low),
-    surfaceContainer = colorResource(R.color.light_surface_container),
-    surfaceContainerHigh = colorResource(R.color.light_surface_container_high),
-    surfaceContainerHighest = colorResource(R.color.light_surface_container_highest),
-)
+val Purple80 = Color(0xFFD0BCFF)
+val PurpleGrey80 = Color(0xFFCCC2DC)
+val Pink80 = Color(0xFFEFB8C8)
 
-@Composable
-internal fun darkAppColors(): ColorScheme = darkColorScheme(
-    primary = colorResource(R.color.dark_primary),
-    onPrimary = colorResource(R.color.dark_on_primary),
-    primaryContainer = colorResource(R.color.dark_primary_container),
-    onPrimaryContainer = colorResource(R.color.dark_on_primary_container),
-    secondary = colorResource(R.color.dark_secondary),
-    onSecondary = colorResource(R.color.dark_on_secondary),
-    secondaryContainer = colorResource(R.color.dark_secondary_container),
-    onSecondaryContainer = colorResource(R.color.dark_on_secondary_container),
-    tertiary = colorResource(R.color.dark_tertiary),
-    onTertiary = colorResource(R.color.dark_on_tertiary),
-    tertiaryContainer = colorResource(R.color.dark_tertiary_container),
-    onTertiaryContainer = colorResource(R.color.dark_on_tertiary_container),
-    background = colorResource(R.color.dark_background),
-    onBackground = colorResource(R.color.dark_on_background),
-    surface = colorResource(R.color.dark_surface),
-    onSurface = colorResource(R.color.dark_on_surface),
-    surfaceVariant = colorResource(R.color.dark_surface_variant),
-    onSurfaceVariant = colorResource(R.color.dark_on_surface_variant),
-    surfaceTint = colorResource(R.color.dark_surface_tint),
-    outline = colorResource(R.color.dark_outline),
-    outlineVariant = colorResource(R.color.dark_outline_variant),
-    error = colorResource(R.color.dark_error),
-    onError = colorResource(R.color.dark_on_error),
-    errorContainer = colorResource(R.color.dark_error_container),
-    onErrorContainer = colorResource(R.color.dark_on_error_container),
-    inverseSurface = colorResource(R.color.dark_inverse_surface),
-    inverseOnSurface = colorResource(R.color.dark_inverse_on_surface),
-    inversePrimary = colorResource(R.color.dark_inverse_primary),
-    scrim = colorResource(R.color.dark_scrim),
-    surfaceBright = colorResource(R.color.dark_surface_bright),
-    surfaceDim = colorResource(R.color.dark_surface_dim),
-    surfaceContainerLowest = colorResource(R.color.dark_surface_container_lowest),
-    surfaceContainerLow = colorResource(R.color.dark_surface_container_low),
-    surfaceContainer = colorResource(R.color.dark_surface_container),
-    surfaceContainerHigh = colorResource(R.color.dark_surface_container_high),
-    surfaceContainerHighest = colorResource(R.color.dark_surface_container_highest),
-)
+val Purple40 = Color(0xFF6650a4)
+val PurpleGrey40 = Color(0xFF625b71)
+val Pink40 = Color(0xFF7D5260)
