@@ -1,8 +1,6 @@
 package com.example.mapapp.controller
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.PointF
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,28 +12,27 @@ import com.example.mapapp.model.MapMarker
 import com.example.mapapp.model.MapState
 import com.example.mapapp.service.DistanceService
 import com.example.mapapp.service.SearchService
+import com.example.mapapp.ui.DistanceFormatter
+import com.example.mapapp.ui.theme.MapStyle
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
 import com.yandex.mapkit.map.CameraPosition
-import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.InputListener
 import com.yandex.mapkit.map.Map
-import com.yandex.mapkit.map.TextStyle
 import com.yandex.mapkit.map.VisibleRegionUtils
 import com.yandex.mapkit.mapview.MapView
-import com.yandex.runtime.image.ImageProvider
 import java.lang.ref.WeakReference
 
-class MapController(context: Context) : DefaultLifecycleObserver, InputListener {
+class MapController(private val context: Context) : DefaultLifecycleObserver, InputListener {
     val mapView = MapView(context)
     private val map = mapView.mapWindow.map
     private val pins = map.mapObjects.addCollection()
     private val lines = map.mapObjects.addCollection()
     private val labels = map.mapObjects.addCollection()
     private val inputListener = WeakReference<InputListener>(this)
-    private val pinIcon = ImageProvider.fromResource(context, R.drawable.map_pin)
-    private val searchService = SearchService()
+    private val mapStyle = MapStyle(context)
+    private val searchService = SearchService(context)
 
     var state by mutableStateOf(MapState())
         private set
@@ -59,9 +56,9 @@ class MapController(context: Context) : DefaultLifecycleObserver, InputListener 
         state.markers.forEach { marker ->
             pins.addPlacemark().apply {
                 geometry = marker.toPoint()
-                setIcon(pinIcon)
-                setIconStyle(IconStyle().apply { anchor = PointF(0.5f, 1f) })
-                zIndex = 10f
+                setIcon(mapStyle.pinIcon)
+                setIconStyle(mapStyle.markerStyle())
+                zIndex = mapStyle.markerZIndex
             }
         }
 
@@ -73,25 +70,22 @@ class MapController(context: Context) : DefaultLifecycleObserver, InputListener 
     private fun drawEdge(first: MapMarker, second: MapMarker) {
         val middle = DistanceService.midpoint(first, second).toPoint()
         lines.addPolyline(Polyline(listOf(first.toPoint(), middle, second.toPoint()))).apply {
-            strokeWidth = 4f
-            setStrokeColor(Color.rgb(101, 80, 164))
+            strokeWidth = mapStyle.lineWidth
+            setStrokeColor(mapStyle.lineColor)
         }
 
         // Текстовая метка находится в середине линии и движется вместе с картой.
-        val distance = DistanceService.format(DistanceService.calculate(first, second))
+        val distance = DistanceFormatter.format(context, DistanceService.calculate(first, second))
         labels.addPlacemark().apply {
             geometry = middle
-            zIndex = 20f
-            setText(distance, TextStyle(
-                14f, Color.BLACK, 2f, Color.WHITE,
-                TextStyle.Placement.CENTER, 0f, false, false
-            ))
+            zIndex = mapStyle.labelZIndex
+            setText(distance, mapStyle.labelStyle())
         }
     }
 
     fun search(address: String) {
         if (address.isBlank()) {
-            state = state.copy(error = "Введите адрес")
+            state = state.copy(error = context.getString(R.string.error_empty_address))
             return
         }
         state = state.copy(isSearching = true, error = null)
@@ -108,7 +102,7 @@ class MapController(context: Context) : DefaultLifecycleObserver, InputListener 
                 }
             )
         } catch (error: Exception) {
-            state = state.copy(isSearching = false, error = "Ошибка запуска поиска")
+            state = state.copy(isSearching = false, error = context.getString(R.string.error_search_start))
         }
     }
 

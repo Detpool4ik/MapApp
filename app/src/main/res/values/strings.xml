@@ -1,3 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Карта и расстояние</string>
+    <string name="map_title">Карта</string>
+    <string name="address_hint">Введите адрес</string>
+    <string name="search">Найти</string>
+    <string name="clear_map">Очистить карту</string>
+    <string name="missing_api_key">Добавьте MAPKIT_API_KEY в local.properties и пересоберите приложение.</string>
+    <string name="error_empty_address">Введите адрес</string>
+    <string name="error_address_not_found">Адрес не найден</string>
+    <string name="error_search_failed">Не удалось найти адрес. Проверьте интернет и API-ключ.</string>
+    <string name="error_search_start">Ошибка запуска поиска</string>
+    <string name="distance_meters">%1$.0f м</string>
+    <string name="distance_kilometers">%1$.2f км</string>
 </resources>

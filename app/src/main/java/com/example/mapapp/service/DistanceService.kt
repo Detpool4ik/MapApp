@@ -1,7 +1,6 @@
 package com.example.mapapp.service
 
 import com.example.mapapp.model.MapMarker
-import java.util.Locale
 import kotlin.math.*
 
 object DistanceService {
@@ -28,11 +27,5 @@ object DistanceService {
         val delta = (second.longitude - first.longitude + 540.0) % 360.0 - 180.0
         val longitude = (first.longitude + delta / 2 + 540.0) % 360.0 - 180.0
         return MapMarker(latitude, longitude)
-    }
-
-    fun format(meters: Double): String = if (meters < 1000) {
-        String.format(Locale("ru", "RU"), "%.0f м", meters)
-    } else {
-        String.format(Locale("ru", "RU"), "%.2f км", meters / 1000)
     }
 }
