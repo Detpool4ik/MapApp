@@ -1,7 +1,5 @@
 package com.example.mapapp.service
 
-import android.content.Context
-import com.example.mapapp.R
 import com.example.mapapp.model.MapMarker
 import com.yandex.mapkit.geometry.Geometry
 import com.yandex.mapkit.geometry.Point
@@ -14,8 +12,7 @@ import com.yandex.mapkit.search.Session
 import com.yandex.runtime.Error
 
 // Один поисковый сервис. Храним сессию и слушатель, пока запрос выполняется.
-class SearchService(context: Context) {
-    private val resources = context.resources
+class SearchService {
     private val manager = SearchFactory.getInstance()
         .createSearchManager(SearchManagerType.ONLINE)
     private var session: Session? = null
@@ -34,13 +31,13 @@ class SearchService(context: Context) {
             override fun onSearchResponse(response: Response) {
                 if (id != requestId) return
                 val point = firstPoint(response)
-                if (point == null) onError(resources.getString(R.string.error_address_not_found))
+                if (point == null) onError("Адрес не найден")
                 else onFound(MapMarker(point.latitude, point.longitude))
             }
 
             override fun onSearchError(error: Error) {
                 if (id == requestId) {
-                    onError(resources.getString(R.string.error_search_failed))
+                    onError("Не удалось найти адрес. Проверьте интернет и API-ключ.")
                 }
             }
         }

@@ -1,7 +1,5 @@
 package com.example.mapapp.service
 
-import android.content.Context
-import com.example.mapapp.R
 import com.yandex.mapkit.geometry.Geo
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Segment
@@ -21,11 +19,11 @@ object DistanceService {
     }
 
     // Переводим метры в километры, если расстояние не меньше 1 км.
-    fun format(context: Context, meters: Double): String {
+    fun format(meters: Double): String {
         return if (meters < 1000) {
-            context.getString(R.string.distance_meters, meters)
+            String.format("%.0f м", meters)
         } else {
-            context.getString(R.string.distance_kilometers, meters / 1000)
+            String.format("%.2f км", meters / 1000)
         }
     }
 }

@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.example.mapapp.R
 import com.example.mapapp.config.MapConfig
 import com.example.mapapp.model.MapMarker
 import com.example.mapapp.model.MapState
@@ -23,7 +22,7 @@ import com.yandex.mapkit.map.VisibleRegionUtils
 import com.yandex.mapkit.mapview.MapView
 import java.lang.ref.WeakReference
 
-class MapController(private val context: Context) : DefaultLifecycleObserver, InputListener {
+class MapController(context: Context) : DefaultLifecycleObserver, InputListener {
     val mapView = MapView(context)
     private val map = mapView.mapWindow.map
     private val pins = map.mapObjects.addCollection()
@@ -31,7 +30,7 @@ class MapController(private val context: Context) : DefaultLifecycleObserver, In
     private val labels = map.mapObjects.addCollection()
     private val inputListener = WeakReference<InputListener>(this)
     private val mapStyle = MapStyle(context)
-    private val searchService = SearchService(context)
+    private val searchService = SearchService()
 
     var state by mutableStateOf(MapState())
         private set
@@ -76,7 +75,7 @@ class MapController(private val context: Context) : DefaultLifecycleObserver, In
         }
 
         // Текстовая метка находится в середине линии и движется вместе с картой.
-        val distance = DistanceService.format(context, DistanceService.calculate(start, end))
+        val distance = DistanceService.format(DistanceService.calculate(start, end))
         labels.addPlacemark().apply {
             geometry = middle
             zIndex = mapStyle.labelZIndex
@@ -86,7 +85,7 @@ class MapController(private val context: Context) : DefaultLifecycleObserver, In
 
     fun search(address: String) {
         if (address.isBlank()) {
-            state = state.copy(error = context.getString(R.string.error_empty_address))
+            state = state.copy(error = "Введите адрес")
             return
         }
         state = state.copy(isSearching = true, error = null)
@@ -103,7 +102,7 @@ class MapController(private val context: Context) : DefaultLifecycleObserver, In
                 }
             )
         } catch (error: Exception) {
-            state = state.copy(isSearching = false, error = context.getString(R.string.error_search_start))
+            state = state.copy(isSearching = false, error = "Ошибка запуска поиска")
         }
     }
 
